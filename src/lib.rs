@@ -1,10 +1,10 @@
 extern crate libc;
 use std::ptr;
 use std::ffi::CString;
-use std::os::raw::c_char;
+use std::os::raw::{c_char, c_void};
 
 #[allow(non_camel_case_types)]
-type obs_module_t = *mut ();
+type obs_module_t = *mut c_void;
 
 struct OBSRustModule {
     pointer: obs_module_t
