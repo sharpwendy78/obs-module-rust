@@ -1,0 +1,12 @@
+[package]
+name = "obs-module-rust"
+version = "0.1.0"
+authors = ["Stéphane Lepin <stephane.lepin@gmail.com>"]
+
+[dependencies]
+libc = "0.2"
+
+[lib]
+name = "obsmodulerust"
+path = "src/lib.rs"
+crate-type = ["dylib"]
