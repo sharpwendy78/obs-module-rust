@@ -1,15 +1,23 @@
 extern crate libc;
 use std::ptr;
+use std::ffi::CString;
+use std::os::raw::c_char;
 
 #[allow(non_camel_case_types)]
-pub type obs_module_t = *mut ();
+type obs_module_t = *mut ();
 
-pub struct OBSRustModule {
+struct OBSRustModule {
     pointer: obs_module_t
 }
 unsafe impl Sync for OBSRustModule {}
 
-static mut THIS_MODULE: OBSRustModule = OBSRustModule { pointer: ptr::null_mut() };
+const MODULE_NAME: &str = "obs-module-rust";
+const MODULE_DESCRIPTION: &str = "Example of an OBS module written in Rust";
+const MODULE_AUTHOR: &str = "Stéphane Lepin";
+
+static mut THIS_MODULE: OBSRustModule = OBSRustModule {
+    pointer: ptr::null_mut()
+};
 
 #[no_mangle]
 pub extern fn obs_module_set_pointer(module_ptr: obs_module_t) -> ()
@@ -25,6 +33,24 @@ pub extern fn obs_current_module() -> obs_module_t
     unsafe {
         THIS_MODULE.pointer
     }
+}
+
+#[no_mangle]
+pub extern fn obs_module_name() -> *const c_char
+{
+    CString::new(MODULE_NAME).expect("CString::new failed").as_ptr()
+}
+
+#[no_mangle]
+pub extern fn obs_module_description() -> *const c_char
+{
+    CString::new(MODULE_DESCRIPTION).expect("CString::new failed").as_ptr()
+}
+
+#[no_mangle]
+pub extern fn obs_module_author() -> *const c_char
+{
+    CString::new(MODULE_AUTHOR).expect("CString::new failed").as_ptr()
 }
 
 #[no_mangle]
