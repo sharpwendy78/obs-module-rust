@@ -1,7 +1,7 @@
 #[macro_use]
 mod obsmodule {
     macro_rules! obs_declare_module {
-        ($name:expr, $description:expr, $author:expr) => (
+        ($name:expr, $description:expr) => {
             #[macro_use]
             extern crate lazy_static;
 
@@ -13,7 +13,6 @@ mod obsmodule {
 
             const MODULE_NAME: &str = concat!($name, "\0");
             const MODULE_DESCRIPTION: &str = concat!($description, "\0");
-            const MODULE_AUTHOR: &str = concat!($author, "\0");
 
             struct OBSRustModule {
                 pointer: Option<*const c_void>
@@ -54,12 +53,6 @@ mod obsmodule {
             }
 
             #[no_mangle]
-            pub extern fn obs_module_author() -> *const u8
-            {
-                MODULE_AUTHOR.as_ptr()
-            }
-
-            #[no_mangle]
             pub extern fn obs_module_ver() -> u32
             {
                 (
@@ -68,6 +61,18 @@ mod obsmodule {
                     (libobs::LIBOBS_API_PATCH_VER)
                 )
             }
-        )
+        };
+    }
+
+    macro_rules! obs_module_author {
+        ($author:expr) => {
+            const MODULE_AUTHOR: &str = concat!($author, "\0");
+
+            #[no_mangle]
+            pub extern fn obs_module_author() -> *const u8
+            {
+                MODULE_AUTHOR.as_ptr()
+            }
+        };
     }
 }

@@ -1,11 +1,8 @@
 #[macro_use]
 mod obsmodule;
 
-obs_declare_module!(
-    "obs-module-rust",
-    "Rust module example",
-    "Stéphane Lepin"
-);
+obs_declare_module!("obs-module-rust", "Rust OBS module example");
+obs_module_author!("Stéphane Lepin");
 
 #[no_mangle]
 pub extern fn obs_module_load() -> bool
