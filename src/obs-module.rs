@@ -1,15 +1,14 @@
-extern crate libc;
 #[macro_use]
 extern crate lazy_static;
+
 use std::ptr;
 use std::sync::{Mutex};
 use std::os::raw::c_void;
 
-#[allow(non_camel_case_types)]
-type obs_module_t = *const c_void;
+mod libobs;
 
 struct OBSRustModule {
-    pointer: Option<obs_module_t>
+    pointer: Option<*const c_void>
 }
 unsafe impl Sync for OBSRustModule {}
 unsafe impl Send for OBSRustModule {}
@@ -23,13 +22,13 @@ lazy_static! {
 }
 
 #[no_mangle]
-pub extern fn obs_module_set_pointer(module_ptr: obs_module_t) -> ()
+pub extern fn obs_module_set_pointer(module_ptr: *const c_void) -> ()
 {
     THIS_MODULE.lock().unwrap().pointer = Option::Some(module_ptr);
 }
 
 #[no_mangle]
-pub extern fn obs_current_module() -> obs_module_t
+pub extern fn obs_current_module() -> *const c_void
 {
     THIS_MODULE.lock().unwrap().pointer.unwrap_or(ptr::null())
 }
@@ -55,5 +54,9 @@ pub extern fn obs_module_author() -> *const u8
 #[no_mangle]
 pub extern fn obs_module_ver() -> u32
 {
-    101010 // TODO use LIBOBS_API_VER from libobs
+    (
+        (libobs::LIBOBS_API_MAJOR_VER << 24) |
+        (libobs::LIBOBS_API_MINOR_VER << 16) |
+        (libobs::LIBOBS_API_PATCH_VER)
+    )
 }

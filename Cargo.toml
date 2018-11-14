@@ -7,6 +7,9 @@ authors = ["Stéphane Lepin <stephane.lepin@gmail.com>"]
 libc = "0.2"
 lazy_static = "1.2.0"
 
+[build-dependencies]
+bindgen = "0.37.0"
+
 [lib]
 name = "obsmodulerust"
 path = "src/lib.rs"
