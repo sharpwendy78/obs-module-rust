@@ -64,6 +64,7 @@ mod obsmodule {
         };
     }
 
+    #[allow(unused)]
     macro_rules! obs_module_author {
         ($author:expr) => {
             const MODULE_AUTHOR: &str = concat!($author, "\0");
