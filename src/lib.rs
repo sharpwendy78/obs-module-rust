@@ -1,8 +1,11 @@
-const MODULE_NAME: &str = "obs-module-rust\0";
-const MODULE_DESCRIPTION: &str = "Example of an OBS module written in Rust\0";
-const MODULE_AUTHOR: &str = "Stéphane Lepin\0";
+#[macro_use]
+mod obsmodule;
 
-include!("obs-module.rs");
+obs_declare_module!(
+    "obs-module-rust",
+    "Rust module example",
+    "Stéphane Lepin"
+);
 
 #[no_mangle]
 pub extern fn obs_module_load() -> bool
