@@ -1,1 +1,26 @@
 language: rust
+cache: cargo
+
+matrix:
+  include:
+  - os: linux
+    dist: trusty
+    sudo: required
+    services:
+    - docker
+    before_install:
+    - docker run -d --name xenial -v $(pwd):/repo -v /home/travis/package:/package -w /repo nimmis/ubuntu:16.04
+    - docker exec -it xenial /repo/CI/install-dependencies-xenial.sh
+    script:
+    - docker exec -it xenial /repo/CI/build-xenial.sh
+
+  - os: osx
+    env:
+     - CMAKE_PREFIX_PATH=/usr/local/opt/qt5/lib/cmake
+     - LIBOBS_INCLUDE_DIR="../obs-studio/libobs"
+     - LIBOBS_LIB_DIR="../obs-studio/build/libobs"
+    osx_image: xcode8.3
+    before_install: "./CI/install-dependencies-osx.sh"
+    script:
+      - cargo build
+      - cargo test

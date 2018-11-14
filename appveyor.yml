@@ -1,0 +1,29 @@
+environment:
+  CURL_VERSION: 7.39.0
+
+install:
+  - git submodule update --init --recursive
+  - cd C:\projects\
+  - if not exist dependencies2015.zip curl -kLO https://obsproject.com/downloads/dependencies2015.zip -f --retry 5 -C -
+  - 7z x dependencies2015.zip -odependencies2015
+  - set DepsPath32=%CD%\dependencies2015\win32
+  - set DepsPath64=%CD%\dependencies2015\win64
+  - call C:\projects\obs-module-rust\CI\install-setup-qt.cmd
+  - set build_config=Release
+  - call C:\projects\obs-module-rust\CI\install-build-obs.cmd
+  - cd C:\projects\obs-module-rust\
+  - call C:\projects\obs-module-rust\CI\install-rust.cmd
+
+build_script:
+  - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
+  - set LIBOBS_INCLUDE_DIR="C:\projects\obs-studio\libobs"
+  - set LIBOBS_LIB_DIR="C:\projects\obs-studio\build64\libobs\%build_config%"
+  - cargo build
+  - cargo test
+
+test: off
+
+cache:
+  - C:\projects\dependencies2015.zip
+  - C:\projects\obs-studio-last-tag-built.txt
+  - C:\projects\obs-studio
