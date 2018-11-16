@@ -5,14 +5,21 @@ use std::path::PathBuf;
 
 fn main() {
     println!("cargo:rustc-link-lib=obs");
+    println!("cargo:rustc-link-lib=obs-frontend-api");
 
     let bindings_file = PathBuf::from(
         env::var("OUT_DIR").unwrap()
-    ).join("libobs_extern.rs");
+    ).join("obs_extern.rs");
 
     let libobs_include_dir = env::var("LIBOBS_INCLUDE_DIR");
+    let frontend_include_dir = env::var("FRONTENDAPI_INCLUDE_DIR");
     
     match env::var("LIBOBS_LIB_DIR") {
+        Ok(x) => println!("cargo:rustc-link-search={}", x),
+        _ => {}
+    }
+
+    match env::var("FRONTENDAPI_LIB_DIR") {
         Ok(x) => println!("cargo:rustc-link-search={}", x),
         _ => {}
     }
@@ -25,7 +32,7 @@ fn main() {
                     .emit_builtins()
                     .ctypes_prefix("libc")
                     .raw_line("extern crate libc;")
-                    .header("src/c/libobs_wrapper.h")
+                    .header("src/c/obs_wrapper.h")
                     .blacklist_type("max_align_t")
                     .blacklist_type("FP_NAN")
                     .blacklist_type("FP_INFINITE")
@@ -33,12 +40,14 @@ fn main() {
                     .blacklist_type("FP_SUBNORMAL")
                     .blacklist_type("FP_NORMAL");
 
-                match libobs_include_dir {
-                    Ok(x) => {
-                        builder = builder.clang_arg(format!("-I{}", x));
-                        println!("cargo:include={}", x);
+                for optional in [libobs_include_dir, frontend_include_dir].iter() {
+                    match optional {
+                        Ok(x) => {
+                            builder = builder.clang_arg(format!("-I{}", x));
+                            println!("cargo:include={}", x);
+                        }
+                        _ => {}
                     }
-                    _ => {}
                 }
 
                 builder
