@@ -11,8 +11,8 @@ mod obsmodule {
 
             mod libobs;
 
-            const MODULE_NAME: &str = concat!($name, "\0");
-            const MODULE_DESCRIPTION: &str = concat!($description, "\0");
+            static MODULE_NAME: &'static str = concat!($name, "\0");
+            static MODULE_DESCRIPTION: &'static str = concat!($description, "\0");
 
             struct OBSRustModule {
                 pointer: Option<*const c_void>
@@ -67,7 +67,7 @@ mod obsmodule {
     #[allow(unused)]
     macro_rules! obs_module_author {
         ($author:expr) => {
-            const MODULE_AUTHOR: &str = concat!($author, "\0");
+            static MODULE_AUTHOR: &'static str = concat!($author, "\0");
 
             #[no_mangle]
             pub extern fn obs_module_author() -> *const u8
